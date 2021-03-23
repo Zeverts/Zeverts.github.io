@@ -6,22 +6,13 @@
     <description>Recent content in Categories on Zachary Everts&#39; GitHub Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Books</title>
-      <link>/categories/books/</link>
-      <pubDate>Sun, 14 Mar 2021 00:00:00 +0000</pubDate>
+      <title>test</title>
+      <link>/categories/test/</link>
+      <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
       
-      <guid>/categories/books/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>R</title>
-      <link>/categories/r/</link>
-      <pubDate>Tue, 01 Dec 2020 21:13:14 -0500</pubDate>
-      
-      <guid>/categories/r/</guid>
+      <guid>/categories/test/</guid>
       <description></description>
     </item>
     

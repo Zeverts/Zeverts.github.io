@@ -6,11 +6,11 @@
     <description>Recent content in Tags on Zachary Everts&#39; GitHub Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 03 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 04 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>analysis</title>
       <link>/tags/analysis/</link>
-      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>/tags/analysis/</guid>
       <description></description>
@@ -19,7 +19,7 @@
     <item>
       <title>baseball</title>
       <link>/tags/baseball/</link>
-      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>/tags/baseball/</guid>
       <description></description>
@@ -28,9 +28,36 @@
     <item>
       <title>Colorado</title>
       <link>/tags/colorado/</link>
-      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>/tags/colorado/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pitching</title>
+      <link>/tags/pitching/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/pitching/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rockies</title>
+      <link>/tags/rockies/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/rockies/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sports</title>
+      <link>/tags/sports/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/sports/</guid>
       <description></description>
     </item>
     
@@ -58,24 +85,6 @@
       <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>/tags/r/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Rockies</title>
-      <link>/tags/rockies/</link>
-      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/rockies/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>sports</title>
-      <link>/tags/sports/</link>
-      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/sports/</guid>
       <description></description>
     </item>
     

@@ -62,7 +62,7 @@
 
   <article class="article">
     
-    <span class="article-duration">8 min read</span>
+    <span class="article-duration">11 min read</span>
     
 
     <h1 class="article-title">Did the 2019 Colorado Rockies really lack pitching talent?</h1>
@@ -76,7 +76,8 @@
 <script src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/header-attrs/header-attrs.js"></script>
 
 
-<p>Hello does this work?</p>
+<p>The Colorado Rockies aren’t typically known for their pitching prowess but for their ability to hit. The 2019 season was no exception with the Rockies having statistically one of the worst bullpens. The Rockies gave up the most hits and subsequently had the second highest ERA in the MLB. For most teams it would be easy to place all the blame on the pitching staff but the Rockies have a big factor lurking in the altidude of Coors Field.</p>
+<p>The Coors field effect is widely known and often attributed to hits flying farther in the thin Colorado air. However, slightly lesser known is the fact that the thin air actually has an effect of pitches break and velocities making it harder for pitchers to excel in this park. So I wanted to take a deeper look to see if the Rockies 2019 season pitching woes can truly be attributed to the bullpen or if Coors Field is skewing their statistics.</p>
 <pre><code>## 
 ## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
@@ -84,17 +85,7 @@
 ##   Tm = col_character()
 ## )
 ## ℹ Use `spec()` for the full column specifications.</code></pre>
-<pre class="r"><code>MLBpitch %&gt;% summarise(
-  Wins = mean(W),
-  Hits = mean(H),
-  Runs = sum(ER),
-  Innings = sum(IP),
-  ERA = ((Runs / Innings) * 9) 
-)</code></pre>
-<pre><code>## # A tibble: 1 x 5
-##    Wins  Hits  Runs Innings   ERA
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
-## 1  81.0 1401. 21684  43418.  4.49</code></pre>
+<p>I’m going to start by looking at the entire MLB’s pitching statistics and focusing on Hits given up, ERA, and Wins.</p>
 <pre class="r"><code>Col &lt;- MLBpitch %&gt;% filter(Tm == &quot;COL&quot;)
 LAD &lt;- MLBpitch %&gt;% filter(Tm == &quot;LAD&quot;)
 
@@ -129,7 +120,9 @@ ggplot() +
     plot.subtitle = element_text(size=10), 
     panel.grid.minor = element_blank()
     )</code></pre>
-<p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+The Dodgers and Rockies both play in the National League West Division but somehow ended up on opposite ends of the pitching scales. The Dodgers gave up just 3.37 ERA over the course of the season and winning 106 games in the process. Meanwhile the Rockies gave up a near league high 5.56 ERA but somewhat surprisingly won 71 games. The Rockies don’t appear to fit within the rest of the model winning more games than teams with similar statistics.</p>
+<p>To look farther into this oddity in trends I wanted to isolate the pitching statistics at Coors Field vs on the road. To do this I gathered the 2019 season pitching game logs for both the Colorado Rockies and Los Angeles Dodgers and separated them into home and away ERA splits.</p>
 <pre class="r"><code>Col &lt;- read_csv(&quot;ColGame1.csv&quot;)</code></pre>
 <pre><code>## 
 ## ── Column specification ────────────────────────────────────────────────────────
@@ -240,34 +233,14 @@ splits_League &lt;- splits %&gt;% filter(Team == &quot;League Average&quot;)</co
   theme_minimal() + 
   theme(
     plot.title = element_text(size = 16, face = &quot;bold&quot;),
-    plot.subtitle = element_text(size = 10),
+    plot.subtitle = element_text(size = 12),
     axis.title = element_text(size = 8),
     panel.grid.minor = element_blank()
   )</code></pre>
 <p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<pre class="r"><code>col_Ab &lt;- c(&quot;Singles&quot; = 414, &quot;Doubles/Triples&quot; = 151,  &quot;Home Runs&quot; = 126, 194)
-col_Hb &lt;- c(&quot;Singles&quot; = 523, &quot;Doubles/Triple&quot; = 218,  &quot;Home Runs&quot; = 144)</code></pre>
-<pre class="r"><code>iron(
-waffle(
-  col_Hb/3,
-  rows = 9,
-  title = &quot;The Rockies couldn&#39;t limit the number of hits allowed at Home&quot;,
-  xlab = &quot;1 square = 3 occurences&quot;,
-  colors = c(&quot;#881eeb&quot;, &quot;#C4CED4&quot;, &quot;#27251F&quot;), 
-) +theme(
-    plot.title = element_text(size = 16, face = &quot;bold&quot;),
-    ),
-waffle(
-  col_Ab/3,
-  rows = 9,
-  title = &quot;Colorado excelled at pitching on the road&quot;,
-  xlab = &quot;1 square = 3 occurences&quot;,
-  colors = c(&quot;#881eeb&quot;,  &quot;#C4CED4&quot;, &quot;#27251F&quot;, &quot;White&quot;)
-) +theme(
-    plot.title = element_text(size = 16, face = &quot;bold&quot;),
-    ) 
-)</code></pre>
-<p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>The Rockies splits especially at the beginning of the season were drastically different. At Coors Field, Colorado’s ERA was nearly 6.2, while on the road it landed closer to 4.9. Colorado gave up on average 1.3 more runs at home than in opponents ball parks. This isn’t even taking into account the possibilities of Home Field advantages. The Dodgers on the other hand pitched better at home with an ERA of 2.8 at home versus 3.95 on the road.</p>
+<p>Looking at the season overall for the first half of the season Colorado’s road split were lower than the league average. By the end of the season however, both of Colorado’s splits were above that mark, which leans towards the assumption of Colorado having a sub-par pitching staff. The sizable difference between the home and road splits does however suggest that Coors Field is affecting their stat line.</p>
+<p>To see what could be causing this difference I will decided to look at the correlation between hits given up and ERA using Colorado’s 2019 game logs.</p>
 <pre class="r"><code>Correlation &lt;-Col %&gt;% 
   mutate(
     era = ((ER/IP) *9)
@@ -302,8 +275,7 @@ summary(fit)</code></pre>
 <pre class="r"><code>Correlation$predicted &lt;- predict(fit)
 
 Correlation$residuals &lt;- residuals(fit) </code></pre>
-<pre class="r"><code>(.74447 * 4) -1.57598 #Plug in number of hits to predict ERA</code></pre>
-<pre><code>## [1] 1.4019</code></pre>
+<p>It almost goes without saying but there is a strong correlation between the number of hits a pitcher allows and their subsequent ERA’s. I mean, you can’t score without hitting the ball. According to my correlation 58% of all ERA’s can be predicted using hits to determine ERA. I’m going to use this correlation to create a model that will predict Colorado’s ERA based off of hits allowed per game.</p>
 <pre class="r"><code>Correlation %&gt;% 
   arrange(desc(residuals)) %&gt;% 
   select(Opp, Rslt, era, H, residuals, predicted)</code></pre>
@@ -340,84 +312,43 @@ caption = &quot;Source: baseball-reference.com | By Zachary Everts&quot;) +
     panel.grid.minor = element_blank()
   )</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<pre class="r"><code>correlation2 &lt;- read_csv(&quot;MLBpitch.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   .default = col_double(),
-##   Tm = col_character()
-## )
-## ℹ Use `spec()` for the full column specifications.</code></pre>
-<pre class="r"><code>correlation2 %&gt;% 
-  summarize(Correlation = cor(`ERA`, W, method = &#39;pearson&#39;))</code></pre>
-<pre><code>## # A tibble: 1 x 1
-##   Correlation
-##         &lt;dbl&gt;
-## 1      -0.833</code></pre>
-<pre class="r"><code>fit &lt;- lm(W ~ ERA, data = correlation2)
-
-summary(fit)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = W ~ ERA, data = correlation2)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -18.4367  -5.9334  -0.7146   6.6071  17.7778 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  183.305     12.933  14.174 2.67e-14 ***
-## ERA          -22.757      2.853  -7.977 1.09e-08 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 8.945 on 28 degrees of freedom
-## Multiple R-squared:  0.6944, Adjusted R-squared:  0.6835 
-## F-statistic: 63.63 on 1 and 28 DF,  p-value: 1.094e-08</code></pre>
-<pre class="r"><code>correlation2$predicted &lt;- predict(fit)
-
-correlation2$residuals &lt;- residuals(fit)</code></pre>
-<pre class="r"><code>(-22.757 * 4.00 )+ 183 #Plug in season ERA to get number of predicted wins</code></pre>
-<pre><code>## [1] 91.972</code></pre>
-<pre class="r"><code>correlation2 %&gt;% 
-  arrange(desc(residuals)) %&gt;% 
-  select(Tm, W, ERA, residuals, predicted)</code></pre>
-<pre><code>## # A tibble: 30 x 5
-##    Tm        W   ERA residuals predicted
-##    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
-##  1 NYY     103  4.31     17.8       85.2
-##  2 COL      71  5.56     14.2       56.8
-##  3 MIN     101  4.18     12.8       88.2
-##  4 TEX      78  5.06      9.85      68.2
-##  5 ATL      97  4.19      9.05      88.0
-##  6 BOS      84  4.7       7.65      76.3
-##  7 HOU     107  3.66      6.99     100. 
-##  8 WSN      93  4.27      6.87      86.1
-##  9 MIL      89  4.4       5.83      83.2
-## 10 LAA      72  5.12      5.21      66.8
-## # … with 20 more rows</code></pre>
-<pre class="r"><code>Colorado &lt;- correlation2 %&gt;% filter(Tm == &quot;COL&quot;)
-
-ggplot(correlation2, aes(x=ERA, y=W)) + 
-  geom_point(color = &quot;Black&quot;)+
-  geom_smooth(method=lm, se=TRUE)+
-  geom_point(data = Colorado, aes(x=ERA, y=W), color = &quot;purple&quot;) + 
-    labs(y = &quot;Wins&quot;, 
-         x = &quot;ERA&quot;,
-       title = &quot;The Rockies 2019 season exemplified a strong correlation between Wins and ERA&quot;,
-       subtitle = &quot;The Rockies overperformed by winning more games than the model predicted&quot;, 
-caption = &quot;Source: baseball-reference.com | By Zachary Everts&quot;) +
-  theme_minimal() + 
-  theme(
-    plot.title = element_text(size = 12, face = &quot;bold&quot;),
-    plot.subtitle = element_text(size = 10),
-    axis.title = element_text(size = 8),
-    panel.grid.minor = element_blank()
-  )</code></pre>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+This graph further shows the strong positive correlation between hits and ERA. The purple dots on the graph represent home games while grey represents games on the road. Using this model I can predict a game’s outcome based off of the number of hits allowed. This model shows that Colorado actually slightly over-performed in a good chunk of home games, with more of those purple dots falling below the line than above. The interesting thing is that many of these performances still fall within a significantly high ERA range between 5-10. Colorado seems to give up many more hits at Coors Field.</p>
+<pre class="r"><code>(.74447 * 4) -1.57598 #Plug in number of hits to predict ERA</code></pre>
+<pre><code>## [1] 1.4019</code></pre>
+<p>This model can be used to predict a team’s ERA based off of the number of hits allowed. For example if the Rockies had given up four hits in a game, the model predicts that the ERA would’ve been close to 1.4. I’m going to use this model to predict what the Rockies season ERA would’ve been if they played all of their games away from Coors field. But first lets take a look at Colorado’s home and away splits.</p>
+<pre class="r"><code>col_Ab &lt;- c(&quot;Singles&quot; = 414, &quot;Extra-base hits&quot; = 151,  &quot;Home Runs&quot; = 126, 194)
+col_Hb &lt;- c(&quot;Singles&quot; = 523, &quot;Extra-base hits&quot; = 218,  &quot;Home Runs&quot; = 144)</code></pre>
+<pre class="r"><code>iron(
+waffle(
+  col_Hb/3,
+  rows = 9,
+  title = &quot;The Rockies couldn&#39;t limit the number of hits allowed at home&quot;,
+  xlab = &quot;1 square = 3 occurences&quot;,
+  colors = c(&quot;#881eeb&quot;, &quot;#C4CED4&quot;, &quot;#27251F&quot;), 
+) +theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    ),
+waffle(
+  col_Ab/3,
+  rows = 9,
+  title = &quot;Colorado excelled at pitching on the road&quot;,
+  xlab = &quot;1 square = 3 occurences&quot;,
+  colors = c(&quot;#881eeb&quot;,  &quot;#C4CED4&quot;, &quot;#27251F&quot;, &quot;White&quot;)
+) +theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    ) 
+)</code></pre>
+<p><img src="/2021/04/04/did-the-2019-colorado-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+Colorado gave up less hits on the road in every single category during the 2019 season. In total there were 194 more hits given up by Rockies pitcher’s at Coors Field than playing on the road.</p>
+<p>On the road Colorado gave up 691 hits over the course of the season. Since half of Colorado’s games were played at home I multiplied this number by two to get 1382 hits. I then was able to find hits per game by dividing total hits by the number of games played. This resulted with 8.53 hits per game.</p>
+<pre class="r"><code>(.74447 * 8.53) -1.57598 #Plug in number of hits to predict ERA</code></pre>
+<pre><code>## [1] 4.774349</code></pre>
+<pre class="r"><code>(.74447 * 10.93) -1.57598 #Plug in number of hits to predict ERA</code></pre>
+<pre><code>## [1] 6.561077</code></pre>
+<p>Plugging that number into our model result in a season ERA of 4.77 which is just barely higher than the MLB average of 4.497. Repeating this process with home games at Coors Field resulted in a season ERA of 6.56, which would be by far the highest team ERA in the MLB. At this point it’s safe to say that Coors Field has a significant affect on Colorado’s pitching performances.</p>
+<p>The interesting thing is that even though the Rockies pitchers perform better on the road, the team wins at a much higher clip at home. In 2019 Colorado went (43-38) at Coors Field and (28-53) on the road. So even with better pitching numbers on the road they still struggles to win. This is most likely attributed to Colorado’s batting woes on away from home but could also be attributed to the pitching.</p>
+<p>Colorado’s road pitching numbers aren’t even very good. Looking at the model’s ERA prediction for Colorado playing only road games, a 4.77 ERA, the Rockies would still have the 11th worst ERA in the MLB. This goes to show that the Rockies are indeed lacking of pitching talent. Coors Field does significantly impact the pitching statistics, but Colorado still has a lack of top-tier pitching talent and an inability to win games on the rood.</p>
 
     </div>
   </article>

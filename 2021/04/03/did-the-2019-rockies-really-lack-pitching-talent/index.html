@@ -22,6 +22,11 @@
 
 
 
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
 <link rel="stylesheet" href="/css/fonts.css" media="all">
 <link rel="stylesheet" href="/css/main.css" media="all">
 
@@ -57,7 +62,7 @@
 
   <article class="article">
     
-    <span class="article-duration">0 min read</span>
+    <span class="article-duration">8 min read</span>
     
 
     <h1 class="article-title">Did the 2019 Rockies really lack pitching talent?</h1>
@@ -71,6 +76,366 @@
 <script src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/header-attrs/header-attrs.js"></script>
 
 
+<p>Introduction:</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.0.5     ✓ dplyr   1.0.3
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(waffle)
+library(ggrepel)</code></pre>
+<pre class="r"><code>MLBpitch &lt;- read_csv(&quot;data/MLBpitch.csv&quot;) </code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   .default = col_double(),
+##   Tm = col_character()
+## )
+## ℹ Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code>MLBpitch %&gt;% summarise(
+  Wins = mean(W),
+  Hits = mean(H),
+  Runs = sum(ER),
+  Innings = sum(IP),
+  ERA = ((Runs / Innings) * 9) 
+)</code></pre>
+<pre><code>## # A tibble: 1 x 5
+##    Wins  Hits  Runs Innings   ERA
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+## 1  81.0 1401. 21684  43418.  4.49</code></pre>
+<pre class="r"><code>Col &lt;- MLBpitch %&gt;% filter(Tm == &quot;COL&quot;)
+LAD &lt;- MLBpitch %&gt;% filter(Tm == &quot;LAD&quot;)
+
+ggplot() + 
+  geom_point(data=MLBpitch, aes(x=H, y=W, size = ERA), 
+    alpha = .65) + 
+  scale_size(range = c(2.5, 9), name=&quot;ERA&quot;)+
+  geom_point(
+    data = Col,
+    aes(x = H, y = W, size = ERA),
+    color = &quot;Purple&quot;,
+    alpha = .9
+  ) + 
+  geom_point(
+    data = LAD,
+    aes(x = H, y = W, size = ERA),
+    color = &quot;Blue&quot;,
+    alpha = .9
+  )+
+  geom_hline(yintercept = 80.96667) +
+  geom_vline(xintercept = 1401.3) +
+  theme_minimal() +
+  labs(
+    x = &quot;Hits Given Up&quot;,
+    y = &quot;Wins&quot;,
+    title = &quot;The Dodgers thrived while the Rockies seemingly struggled &quot;,
+    subtitle = &quot;Colorado gave up the most hits and had the highest ERA but still won more than similiar teams&quot;,
+    caption = &quot;Source: baseball-reference.com | By Zachary Everts&quot;) +
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank()
+    )</code></pre>
+<p><img src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Rockies seem out of the norm: what could be the cause: coors field</p>
+<pre class="r"><code>Col &lt;- read_csv(&quot;data/ColGame1.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   .default = col_double(),
+##   Date = col_character(),
+##   Loc = col_character(),
+##   Opp = col_character(),
+##   Rslt = col_character(),
+##   Umpire = col_character(),
+##   `Pitchers Used (Rest-GameScore-Dec)` = col_character()
+## )
+## ℹ Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code>LAD &lt;- read_csv(&quot;data/LADpitch.csv&quot;)</code></pre>
+<pre><code>## Warning: Missing column names filled in: &#39;X4&#39; [4]</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   .default = col_double(),
+##   X4 = col_character(),
+##   Opp = col_character(),
+##   Rslt = col_character(),
+##   Umpire = col_character(),
+##   `Pitchers Used (Rest-GameScore-Dec)` = col_character()
+## )
+## ℹ Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code>Home &lt;- Col %&gt;% filter(Loc == &quot;x&quot;) 
+Away &lt;- Col %&gt;% filter(Loc == &quot;@&quot;)
+Home_LA &lt;- LAD %&gt;% filter(X4 == &quot;x&quot; )
+Away_LA &lt;- LAD %&gt;% filter(X4 == &quot;@&quot; )
+ 
+ ERA_A &lt;-Away %&gt;% mutate(
+   Runs = cumsum(ER),
+   Innings = cumsum(IP),
+   Home_Runs = cumsum(HR),
+   Doubles = cumsum(`2B`),
+   Triples = cumsum(`3B`),
+   Hits = cumsum(H),
+   a_ERA = ((Runs / Innings) * 9)
+ )
+
+   ERA_H &lt;-Home %&gt;% mutate(
+   Runs = cumsum(ER),
+   Innings = cumsum(IP),
+   Home_Runs = cumsum(HR),
+   Doubles = cumsum(`2B`),
+   Triples = cumsum(`3B`),
+   Hits = cumsum(H),
+   h_ERA = ((Runs / Innings) * 9)
+ )
+   
+ ERA_A_LA &lt;-Away_LA %&gt;% mutate(
+   Runs = cumsum(ER),
+   Innings = cumsum(IP),
+   a_ERA = ((Runs / Innings) * 9)
+ )
+
+   ERA_H_LA &lt;-Home_LA %&gt;% mutate(
+   Runs = cumsum(ER),
+   Innings = cumsum(IP),
+   h_ERA = ((Runs / Innings) * 9)
+ )</code></pre>
+<pre class="r"><code>splits &lt;- read_csv(&quot;data/splits.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Team = col_character(),
+##   ERA = col_double(),
+##   Rk = col_double()
+## )</code></pre>
+<pre class="r"><code>split_LA_H &lt;- splits %&gt;% filter(Team == &quot;LAD Home&quot;)
+split_LA_A &lt;- splits %&gt;% filter(Team == &quot;LAD Away&quot;)
+split_Co_H &lt;- splits %&gt;% filter(Team == &quot;Col Home&quot;)
+split_Co_A &lt;- splits %&gt;% filter(Team == &quot;Col Home&quot;)
+splits_League &lt;- splits %&gt;% filter(Team == &quot;League Average&quot;)</code></pre>
+<pre class="r"><code>set.seed(1234)
+  ggplot()+ 
+  geom_line(data = ERA_H, aes(x = Rk, y = h_ERA), color = &quot;#881eeb&quot;, size = .79,) + 
+  geom_line(data = ERA_A, aes(x = Rk, y = a_ERA), color = &quot;#000000&quot;, size = .79) +
+  geom_line(data = ERA_A_LA, aes(x = Rk, y = a_ERA), color = &quot;grey&quot;, size = .79) +
+  geom_line(data = ERA_H_LA, aes(x = Rk, y = h_ERA), color = &quot;Blue&quot;, size = .79) +
+  geom_text_repel(
+    data=split_LA_H, 
+    aes(x=Rk, y=ERA, label=&quot;LAD Home&quot;)
+  )+
+  geom_text_repel(
+    data=split_LA_A, 
+    aes(x=Rk, y=ERA, label=&quot;LAD Away&quot;)
+  )+
+  geom_text_repel(
+    data=split_Co_H, 
+    aes(x=Rk, y=ERA, label=&quot;COL Home&quot;)
+  )+
+  geom_text_repel(
+    data=split_Co_A, 
+    aes(x=Rk, y=ERA, label=&quot;Col Away&quot;)
+  )+
+  geom_text_repel(
+  data=splits_League, 
+  aes(x=Rk, y=ERA, label=&quot;MLB Average&quot;)
+  )+
+  geom_hline (yintercept = 4.497, color = &quot;red&quot;) +
+    scale_y_continuous(limits = c(0, 10)) +
+    labs(y = &quot;ERA&quot;,x = &quot;Game&quot;, 
+       title = &quot;Road Struggles vs Home Success&quot;,
+       subtitle = &quot;The Rockies pitched better on the road but both splits were higher than the league average ERA&quot;,
+       caption = &quot;Source: baseball-reference.com | By Zachary Everts&quot;) +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    plot.subtitle = element_text(size = 10),
+    axis.title = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )</code></pre>
+<p><img src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+Home and Road Splits: Rockies still below average but there is a significant difference</p>
+<pre class="r"><code>col_Ab &lt;- c(&quot;Singles&quot; = 414, &quot;Doubles/Triples&quot; = 151,  &quot;Home Runs&quot; = 126, 194)
+col_Hb &lt;- c(&quot;Singles&quot; = 523, &quot;Doubles/Triple&quot; = 218,  &quot;Home Runs&quot; = 144)</code></pre>
+<pre class="r"><code>iron(
+waffle(
+  col_Hb/3,
+  rows = 9,
+  title = &quot;The Rockies couldn&#39;t limit the number of hits allowed at Home&quot;,
+  xlab = &quot;1 square = 3 occurences&quot;,
+  colors = c(&quot;#881eeb&quot;, &quot;#C4CED4&quot;, &quot;#27251F&quot;), 
+) +theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    ),
+waffle(
+  col_Ab/3,
+  rows = 9,
+  title = &quot;Colorado excelled at pitching on the road&quot;,
+  xlab = &quot;1 square = 3 occurences&quot;,
+  colors = c(&quot;#881eeb&quot;,  &quot;#C4CED4&quot;, &quot;#27251F&quot;, &quot;White&quot;)
+) +theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    ) 
+)</code></pre>
+<p><img src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Rockies gave up significantlt more hits on the Road vs at Home</p>
+<pre class="r"><code>Correlation &lt;-Col %&gt;% 
+  mutate(
+    era = ((ER/IP) *9)
+  )</code></pre>
+<pre class="r"><code>Correlation %&gt;% 
+  summarize(Correlation = cor(`H`, era, method = &#39;pearson&#39;))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   Correlation
+##         &lt;dbl&gt;
+## 1       0.765</code></pre>
+<pre class="r"><code>fit &lt;- lm(era ~ H, data = Correlation)
+
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = era ~ H, data = Correlation)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.8299 -1.8631 -0.1242  1.6064  8.3924 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1.57598    0.51879  -3.038  0.00278 ** 
+## H            0.74447    0.04957  15.017  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.434 on 160 degrees of freedom
+## Multiple R-squared:  0.585,  Adjusted R-squared:  0.5824 
+## F-statistic: 225.5 on 1 and 160 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>Correlation$predicted &lt;- predict(fit)
+
+Correlation$residuals &lt;- residuals(fit) </code></pre>
+<pre class="r"><code>(.74447 * 1) -1.57598 #Plug in number of hits to predict ERA</code></pre>
+<pre><code>## [1] -0.83151</code></pre>
+<pre class="r"><code>Correlation %&gt;% 
+  arrange(desc(residuals)) %&gt;% 
+  select(Opp, Rslt, era, H, residuals, predicted)</code></pre>
+<pre><code>## # A tibble: 162 x 6
+##    Opp   Rslt      era     H residuals predicted
+##    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+##  1 HOU   L,3-14   15.8    12      8.39      7.36
+##  2 LAD   L,5-12   13.5    13      5.40      8.10
+##  3 SDP   L,13-14  14      15      4.41      9.59
+##  4 HOU   L,6-11   12.4    13      4.27      8.10
+##  5 CHC   L,8-9    10.1    10      4.26      5.87
+##  6 SDP   W,11-10  10      10      4.13      5.87
+##  7 SFG   L,2-19   18      21      3.94     14.1 
+##  8 PIT   L,6-14   13.5    15      3.91      9.59
+##  9 SFG   W,12-11   9       9      3.88      5.12
+## 10 ARI   L,0-8     9       9      3.88      5.12
+## # … with 152 more rows</code></pre>
+<pre class="r"><code>Home = Correlation %&gt;% filter(Loc == &quot;x&quot;)
+
+ggplot(Correlation, aes(x=H, y=era)) + 
+  geom_point(color = &quot;grey&quot;)+
+  geom_smooth(method=lm, se=TRUE)+
+  geom_point(data = Home, aes(x=H, y=era), color = &quot;purple&quot;) +
+    labs(y = &quot;ERA&quot;, 
+         x = &quot;Hits&quot;,
+       title = &quot;The Rockies 2019 season exemplified a strong correlation between Hits and ERA&quot;,
+       subtitle = &quot;The Rockies often overperformed at home compared to the nubmer of hits given up&quot;, 
+caption = &quot;Source: baseball-reference.com | By Zachary Everts&quot;) +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 12, face = &quot;bold&quot;),
+    plot.subtitle = element_text(size = 10),
+    axis.title = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Strong correlation between hits and number of runs</p>
+<pre class="r"><code>correlation2 &lt;- read_csv(&quot;data/MLBpitch.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   .default = col_double(),
+##   Tm = col_character()
+## )
+## ℹ Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code>correlation2 %&gt;% 
+  summarize(Correlation = cor(`ERA`, W, method = &#39;pearson&#39;))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   Correlation
+##         &lt;dbl&gt;
+## 1      -0.833</code></pre>
+<pre class="r"><code>fit &lt;- lm(W ~ ERA, data = correlation2)
+
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = W ~ ERA, data = correlation2)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -18.4367  -5.9334  -0.7146   6.6071  17.7778 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  183.305     12.933  14.174 2.67e-14 ***
+## ERA          -22.757      2.853  -7.977 1.09e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 8.945 on 28 degrees of freedom
+## Multiple R-squared:  0.6944, Adjusted R-squared:  0.6835 
+## F-statistic: 63.63 on 1 and 28 DF,  p-value: 1.094e-08</code></pre>
+<pre class="r"><code>correlation2$predicted &lt;- predict(fit)
+
+correlation2$residuals &lt;- residuals(fit)</code></pre>
+<pre class="r"><code>(-22.757 * 10 )+ 183 #Plug in ERA to get number of wins</code></pre>
+<pre><code>## [1] -44.57</code></pre>
+<pre class="r"><code>correlation2 %&gt;% 
+  arrange(desc(residuals)) %&gt;% 
+  select(Tm, W, ERA, residuals, predicted)</code></pre>
+<pre><code>## # A tibble: 30 x 5
+##    Tm        W   ERA residuals predicted
+##    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+##  1 NYY     103  4.31     17.8       85.2
+##  2 COL      71  5.56     14.2       56.8
+##  3 MIN     101  4.18     12.8       88.2
+##  4 TEX      78  5.06      9.85      68.2
+##  5 ATL      97  4.19      9.05      88.0
+##  6 BOS      84  4.7       7.65      76.3
+##  7 HOU     107  3.66      6.99     100. 
+##  8 WSN      93  4.27      6.87      86.1
+##  9 MIL      89  4.4       5.83      83.2
+## 10 LAA      72  5.12      5.21      66.8
+## # … with 20 more rows</code></pre>
+<pre class="r"><code>Colorado &lt;- correlation2 %&gt;% filter(Tm == &quot;COL&quot;)
+
+ggplot(correlation2, aes(x=ERA, y=W)) + 
+  geom_point(color = &quot;Black&quot;)+
+  geom_smooth(method=lm, se=TRUE)+
+  geom_point(data = Colorado, aes(x=ERA, y=W), color = &quot;purple&quot;) + 
+    labs(y = &quot;Wins&quot;, 
+         x = &quot;ERA&quot;,
+       title = &quot;The Rockies 2019 season exemplified a strong correlation between Wins and ERA&quot;,
+       subtitle = &quot;The Rockies overperformed by winning more games than the model predicted&quot;, 
+caption = &quot;Source: baseball-reference.com | By Zachary Everts&quot;) +
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 12, face = &quot;bold&quot;),
+    plot.subtitle = element_text(size = 10),
+    axis.title = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-22-1.png" width="672" />
+Strong correlation between ERA and Wins</p>
+<p>Plug in numbers to the two models and then making an evaluation of pitching talent</p>
 
     </div>
   </article>
@@ -94,7 +459,22 @@
     </div>
     
 
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
     
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 
     
   </body>

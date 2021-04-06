@@ -62,7 +62,7 @@
 
   <article class="article">
     
-    <span class="article-duration">8 min read</span>
+    <span class="article-duration">7 min read</span>
     
 
     <h1 class="article-title">Did the 2019 Rockies really lack pitching talent?</h1>
@@ -88,14 +88,6 @@
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(waffle)
 library(ggrepel)</code></pre>
-<pre class="r"><code>MLBpitch &lt;- read_csv(&quot;data/MLBpitch.csv&quot;) </code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   .default = col_double(),
-##   Tm = col_character()
-## )
-## ℹ Use `spec()` for the full column specifications.</code></pre>
 <pre class="r"><code>MLBpitch %&gt;% summarise(
   Wins = mean(W),
   Hits = mean(H),
@@ -143,32 +135,6 @@ ggplot() +
     )</code></pre>
 <p><img src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Rockies seem out of the norm: what could be the cause: coors field</p>
-<pre class="r"><code>Col &lt;- read_csv(&quot;data/ColGame1.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   .default = col_double(),
-##   Date = col_character(),
-##   Loc = col_character(),
-##   Opp = col_character(),
-##   Rslt = col_character(),
-##   Umpire = col_character(),
-##   `Pitchers Used (Rest-GameScore-Dec)` = col_character()
-## )
-## ℹ Use `spec()` for the full column specifications.</code></pre>
-<pre class="r"><code>LAD &lt;- read_csv(&quot;data/LADpitch.csv&quot;)</code></pre>
-<pre><code>## Warning: Missing column names filled in: &#39;X4&#39; [4]</code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   .default = col_double(),
-##   X4 = col_character(),
-##   Opp = col_character(),
-##   Rslt = col_character(),
-##   Umpire = col_character(),
-##   `Pitchers Used (Rest-GameScore-Dec)` = col_character()
-## )
-## ℹ Use `spec()` for the full column specifications.</code></pre>
 <pre class="r"><code>Home &lt;- Col %&gt;% filter(Loc == &quot;x&quot;) 
 Away &lt;- Col %&gt;% filter(Loc == &quot;@&quot;)
 Home_LA &lt;- LAD %&gt;% filter(X4 == &quot;x&quot; )
@@ -205,19 +171,6 @@ Away_LA &lt;- LAD %&gt;% filter(X4 == &quot;@&quot; )
    Innings = cumsum(IP),
    h_ERA = ((Runs / Innings) * 9)
  )</code></pre>
-<pre class="r"><code>splits &lt;- read_csv(&quot;data/splits.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   Team = col_character(),
-##   ERA = col_double(),
-##   Rk = col_double()
-## )</code></pre>
-<pre class="r"><code>split_LA_H &lt;- splits %&gt;% filter(Team == &quot;LAD Home&quot;)
-split_LA_A &lt;- splits %&gt;% filter(Team == &quot;LAD Away&quot;)
-split_Co_H &lt;- splits %&gt;% filter(Team == &quot;Col Home&quot;)
-split_Co_A &lt;- splits %&gt;% filter(Team == &quot;Col Home&quot;)
-splits_League &lt;- splits %&gt;% filter(Team == &quot;League Average&quot;)</code></pre>
 <pre class="r"><code>set.seed(1234)
   ggplot()+ 
   geom_line(data = ERA_H, aes(x = Rk, y = h_ERA), color = &quot;#881eeb&quot;, size = .79,) + 
@@ -357,14 +310,6 @@ caption = &quot;Source: baseball-reference.com | By Zachary Everts&quot;) +
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <p><img src="/2021/04/03/did-the-2019-rockies-really-lack-pitching-talent/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>Strong correlation between hits and number of runs</p>
-<pre class="r"><code>correlation2 &lt;- read_csv(&quot;data/MLBpitch.csv&quot;)</code></pre>
-<pre><code>## 
-## ── Column specification ────────────────────────────────────────────────────────
-## cols(
-##   .default = col_double(),
-##   Tm = col_character()
-## )
-## ℹ Use `spec()` for the full column specifications.</code></pre>
 <pre class="r"><code>correlation2 %&gt;% 
   summarize(Correlation = cor(`ERA`, W, method = &#39;pearson&#39;))</code></pre>
 <pre><code>## # A tibble: 1 x 1

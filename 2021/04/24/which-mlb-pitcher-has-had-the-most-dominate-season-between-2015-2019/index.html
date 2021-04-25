@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.81.0" />
+
+
+<title>Which MLB pitcher has had the most dominate season between 2015-2019 - Zachary Everts&#39; GitHub Site</title>
+<meta property="og:title" content="Which MLB pitcher has had the most dominate season between 2015-2019 - Zachary Everts&#39; GitHub Site">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/EvertsZachary">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">13 min read</span>
+    
+
+    <h1 class="article-title">Which MLB pitcher has had the most dominate season between 2015-2019</h1>
+
+    
+    <span class="article-date">2021-04-24</span>
+    
+
+    <div class="article-content">
+      
+<script src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>It almost goes without saying, but pitchers are the most important position in baseball. A pitcher’s performance is almost directly responsible for the outcome of any game, I mean, you can’t lose if you don’t give up runs. So every year it becomes a debate of who is the most dominant pitcher in the Majors. I decided to give this question a look and find the best MLB pitcher since the implementation of league-wide StatCast technology. I started by collecting the data for every pitcher between 2015-2019 opting to exclude the partial 2020 season. I then filtered the data to only include pitchers who threw enough innings to qualify for league records and awards, hence eliminating all relievers from consideration.</p>
+<p>Now obviously not all 328 qualifying pitchers are in consideration for that top spot. I needed to find a way to filter down this number to a more manageable dataset. To accurately evaluate the pitching talent I chose to look at five particular stats, fielding independent pitching (FIP), batting average on balls in play (BABIP),  average exit velocity that is given up (EV), Whiff percentage, and the total number of strikeouts. I took these statistics and found the means for each. I took these means and filtered out any pitchers who weren’t in the top half of each category leaving us with a more manageable 44 pitchers.</p>
+<pre class="r"><code>q_pitchers &lt;- read_csv(&quot;statz.csv&quot;)</code></pre>
+<pre><code>## Warning: Missing column names filled in: &#39;X41&#39; [41]</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   .default = col_double(),
+##   last_name = col_character(),
+##   first_name = col_character(),
+##   X41 = col_logical()
+## )
+## ℹ Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code>elite_pitchers &lt;- read_csv(&quot;Elite.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   Name = col_character(),
+##   TotalZscore = col_double()
+## )</code></pre>
+<pre class="r"><code>pitchers &lt;- q_pitchers %&gt;% mutate(
+  BABIP = (p_total_hits - p_home_run) / (p_ab - p_strikeout - p_home_run + p_sac_fly),
+  FIP = (((13 * p_home_run) + (3*(p_walk + p_hit_by_pitch)) - (2*p_strikeout)) / p_formatted_ip) + 3.17,
+  SOPCT = (p_strikeout/p_ab),
+  EV = (exit_velocity_avg),
+  `WHIFF%` = (whiff_percent),
+  Strikeouts = (p_strikeout)
+)
+
+means &lt;- pitchers %&gt;% summarise(
+  mean_fip = mean(FIP),
+  mean_babip = mean(BABIP),
+  mean_exvelo = mean(EV),
+  mean_whiff = mean(`WHIFF%`),
+  mean_k = mean(Strikeouts)
+)
+means</code></pre>
+<pre><code>## # A tibble: 1 x 5
+##   mean_fip mean_babip mean_exvelo mean_whiff mean_k
+##      &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+## 1     3.93      0.292        88.1       23.8   175.</code></pre>
+<pre class="r"><code>top_pitchers &lt;- pitchers %&gt;% filter(
+  BABIP &lt;= .29241, FIP &lt;= 3.93, EV &lt;= 88.125, `WHIFF%` &gt;= 23.77, Strikeouts &gt;= 174
+)
+top_pitchers</code></pre>
+<pre><code>## # A tibble: 44 x 47
+##    last_name first_name player_id  year p_formatted_ip  p_ab p_total_hits
+##    &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Greinke   Zack          425844  2019           208.   767          175
+##  2 Verlander Justin        434378  2019           223    796          137
+##  3 Cole      Gerrit        543037  2019           212.   762          142
+##  4 Gray      Sonny         543243  2019           175.   622          122
+##  5 Strasburg Stephen       544931  2019           209    768          161
+##  6 deGrom    Jacob         594798  2019           204    745          154
+##  7 Giolito   Lucas         608337  2019           176.   640          131
+##  8 Castillo  Luis          622491  2019           190.   688          139
+##  9 Flaherty  Jack          656427  2019           196.   704          135
+## 10 Greinke   Zack          425844  2017           202.   749          172
+## # … with 34 more rows, and 40 more variables: p_home_run &lt;dbl&gt;,
+## #   p_strikeout &lt;dbl&gt;, p_walk &lt;dbl&gt;, p_k_percent &lt;dbl&gt;, p_bb_percent &lt;dbl&gt;,
+## #   p_earned_run &lt;dbl&gt;, p_save &lt;dbl&gt;, p_win &lt;dbl&gt;, p_era &lt;dbl&gt;,
+## #   p_opp_batting_avg &lt;dbl&gt;, p_quality_start &lt;dbl&gt;, p_hit_by_pitch &lt;dbl&gt;,
+## #   p_sac_fly &lt;dbl&gt;, xba &lt;dbl&gt;, xslg &lt;dbl&gt;, xobp &lt;dbl&gt;, xiso &lt;dbl&gt;,
+## #   exit_velocity_avg &lt;dbl&gt;, sweet_spot_percent &lt;dbl&gt;,
+## #   barrel_batted_rate &lt;dbl&gt;, solidcontact_percent &lt;dbl&gt;,
+## #   hard_hit_percent &lt;dbl&gt;, whiff_percent &lt;dbl&gt;, n_fastball_formatted &lt;dbl&gt;,
+## #   fastball_avg_speed &lt;dbl&gt;, fastball_avg_spin &lt;dbl&gt;,
+## #   n_breaking_formatted &lt;dbl&gt;, breaking_avg_spin &lt;dbl&gt;,
+## #   breaking_avg_break &lt;dbl&gt;, n_offspeed_formatted &lt;dbl&gt;,
+## #   offspeed_avg_speed &lt;dbl&gt;, offspeed_avg_spin &lt;dbl&gt;,
+## #   offspeed_avg_break &lt;dbl&gt;, X41 &lt;lgl&gt;, BABIP &lt;dbl&gt;, FIP &lt;dbl&gt;, SOPCT &lt;dbl&gt;,
+## #   EV &lt;dbl&gt;, `WHIFF%` &lt;dbl&gt;, Strikeouts &lt;dbl&gt;</code></pre>
+<pre class="r"><code>ggplot() + 
+   geom_point(
+    data=pitchers, 
+    aes(x=BABIP, y=FIP, size= EV, color = Strikeouts), alpha = .73) + 
+  scale_size(range = c(1, 6), name=&quot;EV&quot;) + 
+  geom_point(
+    data=top_pitchers, 
+    aes(x=BABIP, y=FIP, size= EV), alpha = .4, color = &quot;red&quot;) + 
+  scale_size(range = c(1, 6), name=&quot;Exit Velocity&quot;) +
+  labs(
+x = &quot;Batting Average on Balls in Play (BABIP)&quot;,
+y = &quot;Fielding Independent Pitching (FIP)&quot;,
+title=&quot;Fourty Four Pitchers Shine Above&quot;, subtitle=&quot;Between 2015-2019 only a handful of highlighted pitchers made the cut with a top pitching performance&quot;, caption=&quot;Source: Savant/Statcast | By Zachary Everts&quot;)  + theme_minimal() + 
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),
+    axis.title = element_text(size = 10), 
+    plot.subtitle = element_text(size=10), 
+    panel.grid.minor = element_blank()
+    )</code></pre>
+<pre><code>## Scale for &#39;size&#39; is already present. Adding another scale for &#39;size&#39;, which
+## will replace the existing scale.</code></pre>
+<p><img src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>pitcher_ability &lt;- top_pitchers %&gt;% select(last_name, first_name, year, FIP, BABIP, EV,`WHIFF%`, Strikeouts  )</code></pre>
+<p>To compare these 44 pitchers I needed a standardized score. To do this I created a series of z-scores for each category and combined them for a ranking. However, it would be irresponsible to assume that each of these categories holds the same weight. To combat this issue I created a linear fit model for each category comparing the correlations between each category and quality starts. Using wins for the comparison might be most people’s first thought, however, quality starts are a more concrete metric to use. Wins can be a deceiving metric one way or the other.</p>
+<p>Just look at Jacob deGrom’s 2018 season. He finished with a 1.70 ERA and a Cy Young award yet finished the season with a 10-9 W/L record. Quality starts on the other hand are completely controlled by pitchers, hence deGrom’s league-leading 28 quality starts in 2018. To qualify as a quality start a pitcher must pitch through six innings and give up three or fewer runs. This metric allows us to more accurately compare pitching performances.</p>
+<pre class="r"><code>fit &lt;- lm(p_quality_start ~ FIP, data = pitchers)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = p_quality_start ~ FIP, data = pitchers)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.9032 -1.8197 -0.0963  2.0423  8.6685 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  30.8701     1.0526   29.33   &lt;2e-16 ***
+## FIP          -3.4110     0.2638  -12.93   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.246 on 326 degrees of freedom
+## Multiple R-squared:  0.339,  Adjusted R-squared:  0.337 
+## F-statistic: 167.2 on 1 and 326 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>fit &lt;- lm(p_quality_start ~ BABIP, data = pitchers)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = p_quality_start ~ BABIP, data = pitchers)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -9.3703 -2.4501 -0.0086  2.4669 10.1001 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   31.021      2.516  12.331  &lt; 2e-16 ***
+## BABIP        -46.387      8.573  -5.411 1.22e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.824 on 326 degrees of freedom
+## Multiple R-squared:  0.0824, Adjusted R-squared:  0.07959 
+## F-statistic: 29.28 on 1 and 326 DF,  p-value: 1.218e-07</code></pre>
+<pre class="r"><code>fit &lt;- lm(p_quality_start ~ EV, data = pitchers)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = p_quality_start ~ EV, data = pitchers)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.6146 -2.5829 -0.0586  2.2923 11.6179 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 116.2016    15.9309   7.294 2.30e-12 ***
+## EV           -1.1205     0.1808  -6.199 1.72e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.776 on 326 degrees of freedom
+## Multiple R-squared:  0.1054, Adjusted R-squared:  0.1027 
+## F-statistic: 38.43 on 1 and 326 DF,  p-value: 1.719e-09</code></pre>
+<pre class="r"><code>fit &lt;- lm(p_quality_start ~ `WHIFF%`, data = pitchers)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = p_quality_start ~ `WHIFF%`, data = pitchers)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -9.4202 -2.3277 -0.1705  2.3616 11.6921 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 10.78124    1.14498   9.416  &lt; 2e-16 ***
+## `WHIFF%`     0.28085    0.04735   5.931 7.69e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.793 on 326 degrees of freedom
+## Multiple R-squared:  0.09739,    Adjusted R-squared:  0.09462 
+## F-statistic: 35.17 on 1 and 326 DF,  p-value: 7.69e-09</code></pre>
+<pre class="r"><code>fit &lt;- lm(p_quality_start ~ Strikeouts, data = pitchers)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = p_quality_start ~ Strikeouts, data = pitchers)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -9.6947 -2.1484 -0.0145  2.1997 11.2331 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 8.458570   0.761171   11.11   &lt;2e-16 ***
+## Strikeouts  0.051542   0.004232   12.18   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.31 on 326 degrees of freedom
+## Multiple R-squared:  0.3127, Adjusted R-squared:  0.3106 
+## F-statistic: 148.3 on 1 and 326 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>I took the adjusted r-squared values for each correlation and added them as the weight for each z-score. The two largest correlations were unsurprisingly strikeouts and FIP. With the scores weighted I then added all of the totals and to find the overall rankings. For a more accurate and complete comparison, I split the dataset up into years and plotted them.</p>
+<pre class="r"><code>pitcher_zscore &lt;- pitcher_ability %&gt;% mutate(
+  FIPz = as.numeric(scale(FIP, center = TRUE, scale = TRUE)) * -1,
+  BABIPz = as.numeric(scale(BABIP, center = TRUE, scale = TRUE)) *-1,
+  EVz = as.numeric(scale(EV, center = TRUE, scale = TRUE)) * -1,
+  WHIFFz = as.numeric(scale(`WHIFF%`, center = TRUE, scale = TRUE)),
+  Kz = as.numeric(scale(Strikeouts, center = TRUE, scale = TRUE)),
+  TotalZscore = .352098*FIPz + .094688*BABIPz + .117798*EVz + .325698*Kz + .109218*WHIFFz
+  ) 
+pitcher_zscore %&gt;% arrange(desc(TotalZscore))</code></pre>
+<pre><code>## # A tibble: 44 x 14
+##    last_name first_name  year   FIP BABIP    EV `WHIFF%` Strikeouts   FIPz
+##    &lt;chr&gt;     &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Kershaw   Clayton     2015  2.02 0.283  85.6     32.5        301  2.37 
+##  2 Cole      Gerrit      2019  2.59 0.276  87.6     37.2        326  1.17 
+##  3 deGrom    Jacob       2018  1.99 0.283  86.1     31          269  2.43 
+##  4 Kluber    Corey       2017  2.51 0.268  85.3     33.6        265  1.35 
+##  5 Scherzer  Max         2018  2.66 0.267  86.6     33          300  1.03 
+##  6 Verlander Justin      2019  3.22 0.219  87.3     33.6        300 -0.149
+##  7 Arrieta   Jake        2015  2.38 0.247  85.1     25          236  1.61 
+##  8 Scherzer  Max         2017  2.91 0.248  86.5     32.1        268  0.508
+##  9 Scherzer  Max         2015  2.80 0.273  87.1     30.7        276  0.736
+## 10 deGrom    Jacob       2019  2.63 0.285  86.6     31.2        255  1.09 
+## # … with 34 more rows, and 5 more variables: BABIPz &lt;dbl&gt;, EVz &lt;dbl&gt;,
+## #   WHIFFz &lt;dbl&gt;, Kz &lt;dbl&gt;, TotalZscore &lt;dbl&gt;</code></pre>
+<pre class="r"><code>ggplot() +
+  geom_lollipop(
+    data = `2015`, aes(y = reorder(last_name, TotalZscore), x = TotalZscore),
+    horizontal = TRUE
+  ) + geom_lollipop(
+    data= `top_ten_15`,
+    aes(y= reorder(last_name, TotalZscore), x=TotalZscore),
+    horizontal = TRUE,
+    color = &quot;red&quot;
+  ) + geom_lollipop(
+    data= top_half_15,
+    aes(y= reorder(last_name, TotalZscore), x=TotalZscore),
+    horizontal = TRUE,
+    color = &quot;blue&quot;
+  ) + labs(
+    x = &quot;Total Z Score&quot;,
+    y = &quot;Pitcher&quot;,
+    title = &quot;Kershaw leads the pack of the best 2015 pitching performances &quot;,
+    subtitle = &quot;This was the strongest seasons with 10 pitchers making the cut and three in the top ten&quot;,
+    caption=&quot;Source: Savant/Statcast | By Zachary Everts&quot;
+  ) + theme_minimal()</code></pre>
+<p><img src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+In 2015 Clayton Kershaw obliterated the competition nearly doubling the second-best score of Arrieta. This year was also the strongest of the five with six positive z-scores and ten of the top 44 performances. Kershaw finished the season with a 16-7 record, 27 quality starts, a 2.02 FIP, and 301 strikeouts. Even though our model projects Kershaw to be the best pitcher of 2015 he finished third in the National League Cy Young voting, behind Jake Arrieta and Zack Greinke.</p>
+<p><img src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/figure-html/unnamed-chunk-14-1.png" width="672" />
+The 2016 season was a struggle for pitchers. Seven pitchers from 2016 made the list and only one of them came out with a positive score. Without a single top ten performance and a lack of high scores, something about this season doesn’t seem right. After doing some digging the problem can most likely be attributed to the overabundance of injuries. Kershaw for one was out a large portion of the season and the league was abundant with blisters, Tommy John surgeries, and more. If you ask conspiracy theorists, however, they might point you towards the juiced ball theory. No matter what the cause 2016 was a struggle for the elite pitching talent in the league. Scherzer won his second Cy Young award but did so with an unimpressive 3.26 FIP and league-leading 284 strikeouts. The most impressive feat he accomplished that season was being the first MLB pitcher to strike out 20 batters in a single game, truly an impressive pitching feat in a down-pitching year.</p>
+<p><img src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+The 2017 season saw a rebound with Corey Kluber and Max Scherzer both making top ten appearances. The relative lack of positive z-scores could still be attributed to a hangover of 2016’s injuries. The large gap between Kluber and Scherzer and the rest of the league shows their dominance that season. In 2017 Kluber was electric leading to his second career Cy Young award and one of the most impressive single month stretches by any starting pitcher all-time. Over the month of September Kluber won five games with a 0.86 ERA and 50 strikeouts.</p>
+<p><img src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Jacob deGrom’s second entry on this list is an impressive outing. In 2018 deGrom won the National League Cy Young award and lead the league in multiple pitching categories including a historic 1.70 ERA. Only three other pitchers since 1968 have pitched a lower ERA. He also boasted a 1.9 FIP and 269 total strikeouts on the season.</p>
+<p><img src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/figure-html/unnamed-chunk-17-1.png" width="672" />
+The 2019 season was the second strongest pitching season behind 2015. This season was responsible for two top ten performances and 5 overall positive scores. Batters couldn’t stop striking out to Gerrit Cole in 2019. By the end of the season, Cole had accumulated a league-high 326 strikeouts with a 39.9% strikeout percentage. However, Cole lost out to Justin Verlander in the American League Cy Young race.</p>
+<pre class="r"><code>ggplot(elite_pitchers, aes(x = reorder(Name, -TotalZscore), weight = TotalZscore)) + 
+  geom_bar() + labs(
+    x = &quot;Pitcher&quot;,
+    y = &quot;Total Z Score&quot;,
+    title = &quot;2016 was a huge down year for pitching&quot;,
+    subtitle = &quot;Every other season&#39;s top pitching performacne obliterated Scherzer&#39;s &#39;16 score&quot;,
+    caption=&quot;Source: Savant/Statcast | By Zachary Everts&quot;
+  ) + theme_minimal() </code></pre>
+<p><img src="/2021/04/24/which-mlb-pitcher-has-had-the-most-dominate-season-between-2015-2019/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Comparing each season’s top pitchers yields some mindblowing statistics. For starters, this really puts into context how bad of a pitching season 2016 really was. The ’17,’18, and ’19 seasons were all extremely close finishes but 2015 and 2016 stood out in opposite directions. Clayton Kershaw’s 2015 season was by far the best season on the records, despite his third-place finish that season in Cy Young voting, he was robbed! The thing that probably did him in was that he didn’t lead any major categories. Kershaw was within the top five of each of the categories I looked at which is what gave him such a strong score.</p>
+<p>While Scherzer’s only appearance as a top yearly performer came in his 2016 campaign he was the most consistently elite pitcher over this time frame. Scherzer had three top ten appearances and four total in the dataset, so don’t let the graph fool you, he’s an elite talent.</p>
+<p>The 2021 season thus far looks like it has the possibility to shake this list up as Jacob deGrom through four games has a 0.31 ERA and 50 strikeouts. Watch out Kershaw, deGrom could be coming for your throne.</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+

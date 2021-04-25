@@ -6,13 +6,40 @@
     <description>Recent content in Categories on Zachary Everts&#39; GitHub Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 04 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 24 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>baseball</title>
       <link>/categories/baseball/</link>
-      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>/categories/baseball/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Graphs</title>
+      <link>/categories/graphs/</link>
+      <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/graphs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>/categories/r/</link>
+      <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sports</title>
+      <link>/categories/sports/</link>
+      <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/sports/</guid>
       <description></description>
     </item>
     
@@ -40,33 +67,6 @@
       <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>/categories/pitching/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>sports</title>
-      <link>/categories/sports/</link>
-      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/sports/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Graphs</title>
-      <link>/categories/graphs/</link>
-      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/graphs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>R</title>
-      <link>/categories/r/</link>
-      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/r/</guid>
       <description></description>
     </item>
     
